@@ -24,7 +24,7 @@ const projects: Project[] = [
     title: "Aniverse - Favourite Anime Catalog",
     category: "NextJS / TS / React / MongoDB",
     image: "/images/project2.png",
-    url: "https://aniverse.netlify.app",
+    url: "https://aniverses.netlify.app",
   },
   {
     title: "Almascotas - Servicio de incineracion de mascotas",
