@@ -18,7 +18,7 @@ const projects: Project[] = [
     title: "Tanatorio de Mascotas",
     category: "NextJS / TS / React / SEO",
     image: "/images/project.png",
-    url: "https://luzanimal.com/",
+    url: "https://luzanimal.netlify.app//",
   },
   {
     title: "Aniverse - Favourite Anime Catalog",
