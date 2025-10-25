@@ -15,6 +15,13 @@ type Project = {
 
 const projects: Project[] = [
   {
+    title: "TS Research / Portfolio",
+    category: "NextJS / TypeScript / Tailwind / Framer Motion",
+    image: "/images/projects/ts-portfolio.png", 
+    url: "https://tsportfolio.netlify.app/",  
+  },
+
+  {
     title: "Tanatorio de Mascotas",
     category: "NextJS / TS / React / SEO",
     image: "/images/project.png",
@@ -43,6 +50,13 @@ const projects: Project[] = [
     category: "NextJS / TS / React / MongoDB",
     image: "/images/project5.png",
     url: "https://cryptoia.netlify.app/",
+  },
+
+  {
+    title: "Finly — Gestor de finances personals",
+    category: "NestJS / PostgreSQL / Prisma / Docker / React / Next.js",
+    image: "/images/projects/finly.png", 
+    url: "https://github.com/VV0AM1/FT", 
   },
 ];
 
@@ -83,7 +97,6 @@ const ProjectCard = ({ project, isLast }: { project: Project; isLast: boolean })
           isLast ? "blur-sm grayscale" : "group-hover:scale-105"
         }`}
       />
-
       {isLast && (
         <div className="absolute inset-0 bg-black/50 flex items-center justify-center">
           <span className="text-white font-bold text-lg">IN PROCESS</span>
@@ -97,6 +110,7 @@ const ProjectCard = ({ project, isLast }: { project: Project; isLast: boolean })
     </div>
   </Link>
 );
+
 const getCardsPerView = (width: number) => {
   if (width < 640) return 1;
   if (width < 1024) return 3;
@@ -143,6 +157,7 @@ const ProjectCarousel: FC = () => {
         <button
           onClick={handlePrev}
           className="absolute left-0 top-1/2 -translate-y-1/2 z-10 p-3 bg-[#2a2c3c] hover:bg-[#353749] rounded-full transition"
+          aria-label="Previous"
         >
           <ChevronLeft size={24} />
         </button>
@@ -158,7 +173,11 @@ const ProjectCarousel: FC = () => {
             className="flex gap-6 justify-center flex-wrap"
           >
             {visibleProjects.map((project) => (
-                <ProjectCard key={project.title} project={project} isLast={project === projects[projects.length - 1]} />
+              <ProjectCard
+                key={project.title}
+                project={project}
+                isLast={project === projects[projects.length - 1]}
+              />
             ))}
           </motion.div>
         </AnimatePresence>
@@ -166,6 +185,7 @@ const ProjectCarousel: FC = () => {
         <button
           onClick={handleNext}
           className="absolute right-0 top-1/2 -translate-y-1/2 z-10 p-3 bg-[#2a2c3c] hover:bg-[#353749] rounded-full transition"
+          aria-label="Next"
         >
           <ChevronRight size={24} />
         </button>
