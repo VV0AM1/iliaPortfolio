@@ -1,4 +1,4 @@
-"use client";
+ "use client";
 
 import { FC, useState, useEffect } from "react";
 import { motion, AnimatePresence, easeInOut } from "framer-motion";
@@ -42,7 +42,7 @@ const projects: Project[] = [
   {
     title: "TS Research / Portfolio",
     category: "NextJS / TypeScript / Tailwind / Framer Motion",
-    image: "/images/projects/ts-portfolio.png",
+    image: "/images/ts-portfolio.png",
     url: "https://tsportfolio.netlify.app/",
   },
   {
@@ -55,7 +55,7 @@ const projects: Project[] = [
   {
     title: "Finly — Gestor de finances personals",
     category: "NestJS / PostgreSQL / Prisma / Docker / React / Next.js",
-    image: "/images/projects/finly.png",
+    image: "/images/finly.png",
     url: "https://github.com/VV0AM1/FT",
     wip: true, 
   },
