@@ -19,7 +19,7 @@ const experiences = [
   },
   {
     title: "Junior Front-End Developer",
-    company: "CROC, Moscow",
+    company: "Indra, Barcelona",
     date: "Dec 2023 – Sept 2024",
     description: [
       "Led UI improvements and reduced page load by 18%",
