@@ -11,27 +11,21 @@ type Project = {
   category: string;
   image: string;
   url: string;
+  wip?: boolean; 
 };
 
 const projects: Project[] = [
-  {
-    title: "TS Research / Portfolio",
-    category: "NextJS / TypeScript / Tailwind / Framer Motion",
-    image: "/images/projects/ts-portfolio.png", 
-    url: "https://tsportfolio.netlify.app/",  
-  },
-
-  {
-    title: "Tanatorio de Mascotas",
-    category: "NextJS / TS / React / SEO",
-    image: "/images/project.png",
-    url: "https://luzanimal.netlify.app/",
-  },
   {
     title: "Aniverse - Favourite Anime Catalog",
     category: "NextJS / TS / React / MongoDB",
     image: "/images/project2.png",
     url: "https://aniverses.netlify.app",
+  },
+  {
+    title: "Tanatorio de Mascotas",
+    category: "NextJS / TS / React / SEO",
+    image: "/images/project.png",
+    url: "https://luzanimal.netlify.app/",
   },
   {
     title: "Almascotas - Servicio de incineracion de mascotas",
@@ -46,17 +40,24 @@ const projects: Project[] = [
     url: "https://latiendadealarcon.com/",
   },
   {
+    title: "TS Research / Portfolio",
+    category: "NextJS / TypeScript / Tailwind / Framer Motion",
+    image: "/images/projects/ts-portfolio.png",
+    url: "https://tsportfolio.netlify.app/",
+  },
+  {
     title: "CryptoIA - Tu portfolio de crypto monedas",
     category: "NextJS / TS / React / MongoDB",
     image: "/images/project5.png",
     url: "https://cryptoia.netlify.app/",
+    wip: true, 
   },
-
   {
     title: "Finly — Gestor de finances personals",
     category: "NestJS / PostgreSQL / Prisma / Docker / React / Next.js",
-    image: "/images/projects/finly.png", 
-    url: "https://github.com/VV0AM1/FT", 
+    image: "/images/projects/finly.png",
+    url: "https://github.com/VV0AM1/FT",
+    wip: true, 
   },
 ];
 
@@ -80,12 +81,12 @@ const cardVariants = {
   }),
 };
 
-const ProjectCard = ({ project, isLast }: { project: Project; isLast: boolean }) => (
+const ProjectCard = ({ project }: { project: Project }) => (
   <Link
     href={project.url}
-    target={isLast ? "_self" : "_blank"}
+    target={project.wip ? "_self" : "_blank"}
     rel="noopener noreferrer"
-    className="w-full sm:w-[300px] flex-shrink-0 bg-[#20222f] rounded-xl overflow-hidden shadow-lg transition-all duration-300 group hover:scale-[1.03] relative"
+    className="w-full sm:w-[300px] flex-shrink-0 rounded-xl overflow-hidden shadow-lg transition-all duration-300 group hover:scale-[1.03] relative bg-[#20222f]"
   >
     <div className="overflow-hidden relative">
       <Image
@@ -94,12 +95,12 @@ const ProjectCard = ({ project, isLast }: { project: Project; isLast: boolean })
         width={300}
         height={200}
         className={`object-cover w-full h-[200px] transition-transform duration-500 ${
-          isLast ? "blur-sm grayscale" : "group-hover:scale-105"
+          project.wip ? "blur-sm grayscale" : "group-hover:scale-105"
         }`}
       />
-      {isLast && (
+      {project.wip && (
         <div className="absolute inset-0 bg-black/50 flex items-center justify-center">
-          <span className="text-white font-bold text-lg">IN PROCESS</span>
+          <span className="text-white font-bold text-lg tracking-wide">IN PROCESS</span>
         </div>
       )}
     </div>
@@ -123,9 +124,7 @@ const ProjectCarousel: FC = () => {
   const [direction, setDirection] = useState(0);
 
   useEffect(() => {
-    const updateView = () => {
-      setCardsPerView(getCardsPerView(window.innerWidth));
-    };
+    const updateView = () => setCardsPerView(getCardsPerView(window.innerWidth));
     updateView();
     window.addEventListener("resize", updateView);
     return () => window.removeEventListener("resize", updateView);
@@ -173,11 +172,7 @@ const ProjectCarousel: FC = () => {
             className="flex gap-6 justify-center flex-wrap"
           >
             {visibleProjects.map((project) => (
-              <ProjectCard
-                key={project.title}
-                project={project}
-                isLast={project === projects[projects.length - 1]}
-              />
+              <ProjectCard key={project.title} project={project} />
             ))}
           </motion.div>
         </AnimatePresence>
