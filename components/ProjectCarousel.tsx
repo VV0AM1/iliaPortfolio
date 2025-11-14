@@ -43,7 +43,7 @@ const projects: Project[] = [
     title: "TS Research / Portfolio",
     category: "NextJS / TypeScript / Tailwind / Framer Motion",
     image: "/images/ts-portfolio.png",
-    url: "https://tsportfolio.netlify.app/",
+    url: "https://ts-research-ilia.netlify.app/",
   },
   {
     title: "CryptoIA - Tu portfolio de crypto monedas",
