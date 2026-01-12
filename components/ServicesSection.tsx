@@ -1,178 +1,129 @@
 "use client";
 
-import { FC, ReactElement, useState, useEffect } from "react";
-import { motion, AnimatePresence, easeInOut } from "framer-motion";
-import {
-  Code2,
-  Paintbrush2,
-  PenTool,
-  Database,
-  Blocks,
-  ChevronLeft,
-  ChevronRight,
-} from "lucide-react";
+import { FC, useState, useEffect } from "react";
+import { motion, AnimatePresence, Variants, wrap } from "framer-motion";
+import { ChevronLeft, ChevronRight } from "lucide-react";
+import ServiceCard from "./cards/ServiceCard";
+import { services } from "../data/services";
 
-interface ServiceCardProps {
-  title: string;
-  icon: ReactElement;
-  items: string[];
-}
-
-const services: ServiceCardProps[] = [
-  {
-    title: "Front-End Development",
-    icon: <Code2 size={40} />,
-    items: ["React.js", "Next.js", "TypeScript", "Tailwind CSS", "Framer Motion"],
+const variants: Variants = {
+  enter: (direction: number) => {
+    return {
+      x: direction > 0 ? 500 : -500,
+      opacity: 0,
+      scale: 0.9,
+    };
   },
-  {
-    title: "UI/UX Integration",
-    icon: <Paintbrush2 size={40} />,
-    items: ["Figma to Code", "Responsive Layouts", "Pixel-perfect Design", "GSAP", "Accessibility"],
-  },
-  {
-    title: "Web Animation",
-    icon: <PenTool size={40} />,
-    items: ["GSAP", "Framer Motion", "CSS Animations", "ScrollTrigger", "Lottie"],
-  },
-  {
-    title: "Back-End Development",
-    icon: <Database size={40} />,
-    items: ["Node.js", "TypeScript", "MongoDB", "Express.js", "Python"],
-  },
-  {
-    title: "CMS & Site Builders",
-    icon: <Blocks size={40} />,
-    items: ["WordPress", "Joomla", "Shopify", "Webflow", "Wix"],
-  },
-];
-
-const variants = {
-  enter: (dir: number) => ({
-    x: dir > 0 ? 300 : -300,
-    opacity: 0,
-    scale: 0.95,
-  }),
   center: {
+    zIndex: 1,
     x: 0,
     opacity: 1,
     scale: 1,
-    transition: { duration: 0.5, ease: easeInOut },
+    transition: {
+      x: { type: "spring", stiffness: 300, damping: 30 },
+      opacity: { duration: 0.2 },
+    }
   },
-  exit: (dir: number) => ({
-    x: dir > 0 ? -300 : 300,
-    opacity: 0,
-    scale: 0.95,
-    transition: { duration: 0.4, ease: easeInOut },
-  }),
+  exit: (direction: number) => {
+    return {
+      zIndex: 0,
+      x: direction < 0 ? 500 : -500,
+      opacity: 0,
+      scale: 0.9,
+      transition: {
+        x: { type: "spring", stiffness: 300, damping: 30 },
+        opacity: { duration: 0.2 },
+      }
+    };
+  },
 };
-
-const getCardsPerView = (width: number) => {
-  if (width < 640) return 1;
-  if (width < 1024) return 2;
-  return 3;
-};
-
-const ServiceCard: FC<ServiceCardProps> = ({ title, icon, items }) => (
-  <motion.div
-    whileHover={{ scale: 1.03 }}
-    whileTap={{ scale: 0.98 }}
-    className="relative bg-[#1b1d2a] border border-[#2f3143] rounded-xl p-8 w-full sm:w-[300px] h-[440px] overflow-hidden group"
-  >
-    <div className="absolute inset-0 z-0 opacity-0 group-hover:opacity-100 transition-opacity duration-500">
-      <div className="absolute -top-20 -left-20 w-[400px] h-[400px] rounded-full border border-[#2f3143]" />
-      <div className="absolute -bottom-20 -right-20 w-[400px] h-[400px] rounded-full border border-[#2f3143]" />
-    </div>
-
-    <div className="relative z-10 flex flex-col h-full">
-      <div className="mb-6 text-white">{icon}</div>
-      <h3 className="text-xl font-semibold text-white mb-4">{title}</h3>
-      <ul className="text-gray-400 space-y-2 text-sm">
-        {items.map((item, i) => (
-          <li key={i}>» {item}</li>
-        ))}
-      </ul>
-    </div>
-  </motion.div>
-);
 
 const ServicesSection: FC = () => {
-  const [index, setIndex] = useState(0);
-  const [dir, setDir] = useState(0);
+  const [[page, direction], setPage] = useState([0, 0]);
   const [cardsPerView, setCardsPerView] = useState(3);
 
   useEffect(() => {
-    const updateView = () => {
-      setCardsPerView(getCardsPerView(window.innerWidth));
+    const handleResize = () => {
+      if (window.innerWidth < 768) setCardsPerView(1);
+      else if (window.innerWidth < 1280) setCardsPerView(2);
+      else setCardsPerView(3);
     };
-
-    updateView();
-    window.addEventListener("resize", updateView);
-    return () => window.removeEventListener("resize", updateView);
+    handleResize();
+    window.addEventListener("resize", handleResize);
+    return () => window.removeEventListener("resize", handleResize);
   }, []);
 
-  const handleNext = () => {
-    setDir(1);
-    setIndex((prev) => (prev + 1) % services.length);
+  const serviceIndex = wrap(0, services.length, page);
+
+  const paginate = (newDirection: number) => {
+    setPage([page + newDirection, newDirection]);
   };
 
-  const handlePrev = () => {
-    setDir(-1);
-    setIndex((prev) => (prev - 1 + services.length) % services.length);
-  };
-
-  const visible = Array.from({ length: cardsPerView }, (_, i) => {
-    const realIndex = (index + i) % services.length;
-    return services[realIndex];
-  });
+  const visibleServices = [];
+  for (let i = 0; i < cardsPerView; i++) {
+    visibleServices.push(services[(serviceIndex + i) % services.length]);
+  }
 
   return (
-    <motion.section
-      initial={{ opacity: 0, y: 50 }}
-      whileInView={{ opacity: 1, y: 0 }}
-      transition={{ duration: 0.6 }}
-      viewport={{ once: true }}
-      id="services"
-      className="bg-[#1b1d2a] text-white py-28 px-4 sm:px-6 md:px-16 lg:px-24 relative"
-    >
-      <div className="text-center mb-16">
-        <p className="text-gray-500 text-lg mb-2">|| My Services</p>
-        <h2 className="text-4xl md:text-6xl font-bold">Services I Provide</h2>
+    <section id="services" className="relative py-24 px-4 overflow-hidden">
+      {/* Background Elements */}
+      <div className="absolute right-0 top-1/2 -translate-y-1/2 w-[500px] h-[500px] bg-secondary/5 rounded-full blur-[100px] pointer-events-none" />
+
+      <div className="max-w-7xl mx-auto relative z-10">
+        <div className="text-center mb-16">
+          <span className="text-accent font-medium tracking-wider mb-2 block uppercase text-sm">What I Do</span>
+          <h2 className="text-4xl md:text-5xl font-bold text-white">
+            Specialized Services
+          </h2>
+        </div>
+
+        <div className="flex flex-col md:flex-row items-center justify-center gap-4 md:gap-8">
+          {/* Controls - Mobile Only (Top) or Desktop (Sides) */}
+          <div className="hidden md:block">
+            <button onClick={() => paginate(-1)} className="p-4 rounded-full border border-white/10 hover:bg-white/10 text-white transition-all hover:scale-105 active:scale-95">
+              <ChevronLeft size={24} />
+            </button>
+          </div>
+
+
+          <div className="flex justify-center gap-6 overflow-visible w-full min-h-[380px]">
+            <AnimatePresence initial={false} mode="popLayout" custom={direction}>
+              {visibleServices.map((service, i) => (
+                <motion.div
+                  key={`${service.title}-${page}-${i}`}
+                  custom={direction}
+                  variants={variants}
+                  initial="enter"
+                  animate="center"
+                  exit="exit"
+                  layout
+                  className="w-full sm:w-[320px] md:w-[350px] flex-shrink-0"
+                >
+                  <ServiceCard {...service} />
+                </motion.div>
+              ))}
+            </AnimatePresence>
+          </div>
+
+          <div className="hidden md:block">
+            <button onClick={() => paginate(1)} className="p-4 rounded-full border border-white/10 hover:bg-white/10 text-white transition-all hover:scale-105 active:scale-95">
+              <ChevronRight size={24} />
+            </button>
+          </div>
+
+          {/* Mobile Controls */}
+          <div className="flex md:hidden gap-4 mt-8">
+            <button onClick={() => paginate(-1)} className="p-4 rounded-full border border-white/10 hover:bg-white/10 text-white transition-all hover:scale-105 active:scale-95">
+              <ChevronLeft size={24} />
+            </button>
+            <button onClick={() => paginate(1)} className="p-4 rounded-full border border-white/10 hover:bg-white/10 text-white transition-all hover:scale-105 active:scale-95">
+              <ChevronRight size={24} />
+            </button>
+          </div>
+
+        </div>
       </div>
-
-      <div className="flex justify-center items-center relative">
-        <button
-          onClick={handlePrev}
-          aria-label="Previous Services"
-          className="absolute left-0 top-1/2 -translate-y-1/2 z-10 p-3 bg-[#2a2c3c] hover:bg-[#353749] rounded-full transition"
-        >
-          <ChevronLeft size={24} />
-        </button>
-
-        <AnimatePresence custom={dir} mode="wait">
-          <motion.div
-            key={index}
-            custom={dir}
-            variants={variants}
-            initial="enter"
-            animate="center"
-            exit="exit"
-            className="flex gap-6 justify-center flex-wrap"
-          >
-            {visible.map((service) => (
-              <ServiceCard key={service.title} {...service} />
-            ))}
-          </motion.div>
-        </AnimatePresence>
-
-        <button
-          onClick={handleNext}
-          aria-label="Next Services"
-          className="absolute right-0 top-1/2 -translate-y-1/2 z-10 p-3 bg-[#2a2c3c] hover:bg-[#353749] rounded-full transition"
-        >
-          <ChevronRight size={24} />
-        </button>
-      </div>
-    </motion.section>
+    </section>
   );
 };
 

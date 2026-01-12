@@ -1,189 +1,117 @@
- "use client";
+"use client";
 
 import { FC, useState, useEffect } from "react";
-import { motion, AnimatePresence, easeInOut } from "framer-motion";
+import { motion, AnimatePresence, Variants, wrap } from "framer-motion";
 import { ChevronLeft, ChevronRight } from "lucide-react";
-import Image from "next/image";
-import Link from "next/link";
+import ProjectCard from "./cards/ProjectCard";
+import { projects } from "../data/projects";
 
-type Project = {
-  title: string;
-  category: string;
-  image: string;
-  url: string;
-  wip?: boolean; 
-};
-
-const projects: Project[] = [
-  {
-    title: "Aniverse - Favourite Anime Catalog",
-    category: "NextJS / TS / React / MongoDB",
-    image: "/images/project2.png",
-    url: "https://aniverses.netlify.app",
+const variants: Variants = {
+  enter: (direction: number) => {
+    return {
+      x: direction > 0 ? 1000 : -1000,
+      opacity: 0,
+      scale: 0.9,
+    };
   },
-  {
-    title: "Tanatorio de Mascotas",
-    category: "NextJS / TS / React / SEO",
-    image: "/images/project.png",
-    url: "https://luzanimal.netlify.app/",
-  },
-  {
-    title: "Almascotas - Servicio de incineracion de mascotas",
-    category: "WordPress / SEO",
-    image: "/images/project3.png",
-    url: "https://almascotas.com/",
-  },
-  {
-    title: "La Tienda Alarcon - Muebles de mejor calidad",
-    category: "SEO / WordPress / Ecommerce / Elementor",
-    image: "/images/project4.png",
-    url: "https://latiendadealarcon.com/",
-  },
-  {
-    title: "TS Research / Portfolio",
-    category: "NextJS / TypeScript / Tailwind / Framer Motion",
-    image: "/images/ts-portfolio.png",
-    url: "https://ts-research-ilia.netlify.app/",
-  },
-  {
-    title: "CryptoIA - Tu portfolio de crypto monedas",
-    category: "NextJS / TS / React / MongoDB",
-    image: "/images/project5.png",
-    url: "https://cryptoia.netlify.app/",
-    wip: true, 
-  },
-  {
-    title: "Finly — Gestor de finances personals",
-    category: "NestJS / PostgreSQL / Prisma / Docker / React / Next.js",
-    image: "/images/finly.png",
-    url: "https://github.com/VV0AM1/FT",
-    wip: true, 
-  },
-];
-
-const cardVariants = {
-  enter: (dir: number) => ({
-    x: dir > 0 ? 300 : -300,
-    opacity: 0,
-    scale: 0.95,
-  }),
   center: {
+    zIndex: 1,
     x: 0,
     opacity: 1,
     scale: 1,
-    transition: { duration: 0.5, ease: easeInOut },
+    transition: {
+      x: { type: "spring", stiffness: 300, damping: 30 },
+      opacity: { duration: 0.2 },
+    }
   },
-  exit: (dir: number) => ({
-    x: dir > 0 ? -300 : 300,
-    opacity: 0,
-    scale: 0.95,
-    transition: { duration: 0.4, ease: easeInOut },
-  }),
-};
-
-const ProjectCard = ({ project }: { project: Project }) => (
-  <Link
-    href={project.url}
-    target={project.wip ? "_self" : "_blank"}
-    rel="noopener noreferrer"
-    className="w-full sm:w-[300px] flex-shrink-0 rounded-xl overflow-hidden shadow-lg transition-all duration-300 group hover:scale-[1.03] relative bg-[#20222f]"
-  >
-    <div className="overflow-hidden relative">
-      <Image
-        src={project.image}
-        alt={project.title}
-        width={300}
-        height={200}
-        className={`object-cover w-full h-[200px] transition-transform duration-500 ${
-          project.wip ? "blur-sm grayscale" : "group-hover:scale-105"
-        }`}
-      />
-      {project.wip && (
-        <div className="absolute inset-0 bg-black/50 flex items-center justify-center">
-          <span className="text-white font-bold text-lg tracking-wide">IN PROCESS</span>
-        </div>
-      )}
-    </div>
-
-    <div className="p-5">
-      <h3 className="text-xl font-semibold text-white mb-2">{project.title}</h3>
-      <p className="text-sm text-gray-400">{project.category}</p>
-    </div>
-  </Link>
-);
-
-const getCardsPerView = (width: number) => {
-  if (width < 640) return 1;
-  if (width < 1024) return 3;
-  return 3;
+  exit: (direction: number) => {
+    return {
+      zIndex: 0,
+      x: direction < 0 ? 1000 : -1000,
+      opacity: 0,
+      scale: 0.9,
+      transition: {
+        x: { type: "spring", stiffness: 300, damping: 30 },
+        opacity: { duration: 0.2 },
+      }
+    };
+  },
 };
 
 const ProjectCarousel: FC = () => {
-  const [index, setIndex] = useState(0);
+  const [[page, direction], setPage] = useState([0, 0]);
   const [cardsPerView, setCardsPerView] = useState(3);
-  const [direction, setDirection] = useState(0);
 
   useEffect(() => {
-    const updateView = () => setCardsPerView(getCardsPerView(window.innerWidth));
-    updateView();
-    window.addEventListener("resize", updateView);
-    return () => window.removeEventListener("resize", updateView);
+    const handleResize = () => {
+      if (window.innerWidth < 768) setCardsPerView(1);
+      else if (window.innerWidth < 1280) setCardsPerView(2);
+      else setCardsPerView(3);
+    };
+    handleResize();
+    window.addEventListener("resize", handleResize);
+    return () => window.removeEventListener("resize", handleResize);
   }, []);
 
-  const handleNext = () => {
-    setDirection(1);
-    setIndex((prev) => (prev + 1) % projects.length);
+  const projectIndex = wrap(0, projects.length, page);
+
+  const paginate = (newDirection: number) => {
+    setPage([page + newDirection, newDirection]);
   };
 
-  const handlePrev = () => {
-    setDirection(-1);
-    setIndex((prev) => (prev - 1 + projects.length) % projects.length);
-  };
-
-  const visibleProjects = Array.from({ length: cardsPerView }, (_, i) => {
-    const realIndex = (index + i) % projects.length;
-    return projects[realIndex];
-  });
+  const visibleProjects = [];
+  for (let i = 0; i < cardsPerView; i++) {
+    visibleProjects.push(projects[(projectIndex + i) % projects.length]);
+  }
 
   return (
-    <section id="projects" className="bg-[#1b1d2a] text-white py-24 px-4 sm:px-6 md:px-16 lg:px-24 relative">
-      <div className="text-center mb-14">
-        <p className="text-gray-500 text-lg mb-2">|| Awesome Portfolio</p>
-        <h2 className="text-4xl md:text-6xl font-bold">My Complete Projects</h2>
+    <section id="projects" className="py-24 px-4 relative overflow-hidden bg-[#0f111a]">
+      {/* Background Ambience */}
+      <div className="absolute top-0 right-0 w-[600px] h-[600px] bg-secondary/5 rounded-full blur-[120px] pointer-events-none" />
+
+      {/* Decor text */}
+      <div className="absolute top-10 right-0 text-9xl font-bold text-white/[0.02] pointer-events-none select-none hidden lg:block">
+        WORKS
       </div>
 
-      <div className="flex justify-center items-center relative">
-        <button
-          onClick={handlePrev}
-          className="absolute left-0 top-1/2 -translate-y-1/2 z-10 p-3 bg-[#2a2c3c] hover:bg-[#353749] rounded-full transition"
-          aria-label="Previous"
-        >
-          <ChevronLeft size={24} />
-        </button>
+      <div className="max-w-7xl mx-auto relative z-10">
+        <div className="flex flex-col md:flex-row justify-between items-end mb-12 px-4">
+          <div>
+            <span className="text-accent font-bold tracking-widest text-sm uppercase mb-2 block">Selected Works</span>
+            <h2 className="text-4xl md:text-5xl font-bold text-white">
+              Featured Projects
+            </h2>
+          </div>
 
-        <AnimatePresence custom={direction} mode="wait">
-          <motion.div
-            key={index}
-            custom={direction}
-            variants={cardVariants}
-            initial="enter"
-            animate="center"
-            exit="exit"
-            className="flex gap-6 justify-center flex-wrap"
-          >
-            {visibleProjects.map((project) => (
-              <ProjectCard key={project.title} project={project} />
+          <div className="flex gap-4 mt-8 md:mt-0">
+            <button onClick={() => paginate(-1)} className="p-4 rounded-full glass hover:bg-white/10 text-white transition-all hover:scale-105 active:scale-95 border border-white/5">
+              <ChevronLeft size={24} />
+            </button>
+            <button onClick={() => paginate(1)} className="p-4 rounded-full glass hover:bg-white/10 text-white transition-all hover:scale-105 active:scale-95 border border-white/5">
+              <ChevronRight size={24} />
+            </button>
+          </div>
+        </div>
+
+        {/* Carousel Container */}
+        <div className="flex justify-center md:justify-start gap-6 lg:gap-8 overflow-visible px-4">
+          <AnimatePresence initial={false} mode="popLayout" custom={direction}>
+            {visibleProjects.map((project, i) => (
+              <motion.div
+                key={`${project.title}-${page}-${i}`}
+                custom={direction}
+                variants={variants}
+                initial="enter"
+                animate="center"
+                exit="exit"
+                layout
+                className="w-full sm:w-[320px] md:w-[350px] flex-shrink-0"
+              >
+                <ProjectCard project={project} />
+              </motion.div>
             ))}
-          </motion.div>
-        </AnimatePresence>
-
-        <button
-          onClick={handleNext}
-          className="absolute right-0 top-1/2 -translate-y-1/2 z-10 p-3 bg-[#2a2c3c] hover:bg-[#353749] rounded-full transition"
-          aria-label="Next"
-        >
-          <ChevronRight size={24} />
-        </button>
+          </AnimatePresence>
+        </div>
       </div>
     </section>
   );

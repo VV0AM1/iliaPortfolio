@@ -1,6 +1,6 @@
 "use client";
 
-import { FC, useState } from "react";
+import { FC, useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import {
   Menu,
@@ -13,86 +13,113 @@ import {
   TrendingUp,
   Code2,
   Mail,
-} from "lucide-react";import Link from "next/link";
+} from "lucide-react";
+import Link from "next/link";
 
 const navItems = [
   { label: "Home", icon: <Home size={18} />, href: "#" },
-  { label: "Service", icon: <Briefcase size={18} />, href: "#services" },
-  { label: "Personal", icon: <FileText size={18} />, href: "#personal" },
+  { label: "Services", icon: <Briefcase size={18} />, href: "#services" },
+  { label: "Skills", icon: <Code2 size={18} />, href: "#skills" },
   { label: "Projects", icon: <Layers size={18} />, href: "#projects" },
-  { label: "Testimonial", icon: <MessageSquare size={18} />, href: "#testimonial" },
-  { label: "Experience", icon: <TrendingUp size={18} />, href: "#experience" },    
-  { label: "Skills", icon: <Code2 size={18} />, href: "#skills" },               
-  { label: "Contact", icon: <Mail size={18} />, href: "#contact" },              
+  { label: "Experience", icon: <TrendingUp size={18} />, href: "#experience" },
+  { label: "Contact", icon: <Mail size={18} />, href: "#contact" },
 ];
+
 const Navbar: FC = () => {
   const [isOpen, setIsOpen] = useState(false);
+  const [scrolled, setScrolled] = useState(false);
+
+  useEffect(() => {
+    const handleScroll = () => {
+      setScrolled(window.scrollY > 50);
+    };
+    window.addEventListener("scroll", handleScroll);
+    return () => window.removeEventListener("scroll", handleScroll);
+  }, []);
 
   return (
     <>
       <motion.header
-        initial={{ y: -80, opacity: 0 }}
-        animate={{ y: 0, opacity: 1 }}
-        transition={{ duration: 0.6, ease: "easeOut" }}
-        className="fixed top-0 left-0 w-full flex justify-between items-center px-8 py-5 bg-[#1F2030] text-white shadow-lg z-50 h-[72px]"
+        initial={{ y: -100 }}
+        animate={{ y: 0 }}
+        transition={{ duration: 0.5 }}
+        className={`fixed top-0 left-0 w-full flex justify-between items-center px-6 md:px-12 py-4 z-50 transition-all duration-300 ${scrolled ? "glass-strong py-3" : "bg-transparent py-6"
+          }`}
       >
-        <motion.div
-          whileHover={{ scale: 1.1 }}
-          className="text-2xl font-bold flex items-center gap-2 cursor-pointer"
-        >
-          <div className="w-6 h-6 bg-white rounded-sm" />
-        </motion.div>
+        <Link href="#" className="flex items-center gap-2 group">
+          <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-primary to-secondary flex items-center justify-center text-white font-bold text-lg shadow-lg group-hover:shadow-primary/50 transition-all">
+            IA
+          </div>
+          <span className="text-lg font-bold text-white tracking-wide">Ilia Akimov</span>
+        </Link>
 
-        <nav className="space-x-8 text-gray-300 hidden md:flex text-base font-medium">
+        {/* Desktop Nav */}
+        <nav className="hidden md:flex items-center gap-8">
           {navItems.map((item, i) => (
-            <motion.div
+            <Link
               key={i}
-              whileHover={{ color: "#ffffff", scale: 1.05 }}
-              transition={{ duration: 0.2 }}
-              className="cursor-pointer transition-colors duration-200"
+              href={item.href}
+              className="text-gray-300 hover:text-white hover:scale-105 transition-all text-sm font-medium flex items-center gap-1.5"
             >
-              <Link href={item.href}>{item.label}</Link>
-            </motion.div>
+              {item.label}
+            </Link>
           ))}
+          <motion.a
+            whileHover={{ scale: 1.05 }}
+            whileTap={{ scale: 0.95 }}
+            href="#contact"
+            className="px-6 py-2.5 bg-white text-black rounded-full text-sm font-semibold hover:bg-gray-200 transition-colors shadow-[0_0_20px_rgba(255,255,255,0.3)]"
+          >
+            Hire Me
+          </motion.a>
         </nav>
 
-        <motion.button
-          whileHover={{ scale: 1.05 }}
-          whileTap={{ scale: 0.95 }}
-          className="hidden sm:inline-block bg-gradient-to-r from-blue-500 to-purple-500 px-6 py-2 rounded-full text-sm font-semibold hover:from-purple-600 hover:to-blue-600 transition-all"
-        >
-          <Link href="#contact">Hire Me<span className="ml-1">»</span></Link>
-        </motion.button>
-
-        <motion.button
-          whileTap={{ scale: 0.9 }}
-          className="md:hidden text-white z-50"
+        {/* Mobile Toggle */}
+        <button
+          className="md:hidden text-white p-2"
           onClick={() => setIsOpen(!isOpen)}
         >
           {isOpen ? <X size={28} /> : <Menu size={28} />}
-        </motion.button>
+        </button>
       </motion.header>
 
+      {/* Mobile Menu */}
       <AnimatePresence>
         {isOpen && (
           <motion.div
-            initial={{ opacity: 0, y: -20 }}
-            animate={{ opacity: 1, y: 0 }}
-            exit={{ opacity: 0, y: -20 }}
-            transition={{ duration: 0.3 }}
-            className="fixed top-[72px] left-0 w-full bg-[#1F2030] flex flex-col items-center gap-6 py-6 shadow-xl z-40"
+            initial={{ opacity: 0, x: "100%" }}
+            animate={{ opacity: 1, x: 0 }}
+            exit={{ opacity: 0, x: "100%" }}
+            transition={{ type: "spring", stiffness: 300, damping: 30 }}
+            className="fixed inset-0 bg-[#0f111a] z-40 flex flex-col items-center justify-center gap-8 md:hidden"
           >
             {navItems.map((item, index) => (
-              <Link
-                href={item.href}
+              <motion.div
                 key={index}
-                onClick={() => setIsOpen(false)}
-                className="flex items-center gap-3 text-lg text-gray-300 hover:text-white transition"
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: index * 0.1 }}
               >
-                {item.icon}
-                {item.label}
-              </Link>
+                <Link
+                  href={item.href}
+                  onClick={() => setIsOpen(false)}
+                  className="text-2xl font-medium text-white flex items-center gap-3 hover:text-primary transition-colors"
+                >
+                  {item.icon}
+                  {item.label}
+                </Link>
+              </motion.div>
             ))}
+            <motion.a
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.5 }}
+              href="#contact"
+              onClick={() => setIsOpen(false)}
+              className="mt-4 px-8 py-3 bg-gradient-to-r from-primary to-secondary text-white rounded-full font-bold text-lg shadow-lg"
+            >
+              Let's Talk
+            </motion.a>
           </motion.div>
         )}
       </AnimatePresence>

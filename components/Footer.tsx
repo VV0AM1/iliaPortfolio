@@ -11,7 +11,7 @@ const Footer: FC = () => {
       whileInView={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.6, ease: "easeOut" }}
       viewport={{ once: true }}
-      className="bg-[#1b1d2a] text-white py-10 px-6 md:px-16 border-t border-[#2c2e3e]"
+      className="glass-strong text-white py-10 px-6 md:px-16"
     >
       <div className="flex flex-col md:flex-row justify-between items-center gap-6">
         <p className="text-sm text-gray-400 text-center md:text-left">
@@ -38,8 +38,8 @@ const Footer: FC = () => {
               href={url}
               target="_blank"
               rel="noopener noreferrer"
-              whileHover={{ scale: 1.1 }}
-              className="p-2 border border-gray-600 rounded-full hover:bg-white hover:text-black transition"
+              whileHover={{ scale: 1.1, color: "#fff" }}
+              className="p-2 border border-white/10 rounded-full hover:bg-white/10 transition text-gray-400"
             >
               <Icon size={18} />
             </motion.a>
