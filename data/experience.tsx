@@ -4,7 +4,7 @@ import { Code2, Building2, MonitorSmartphone } from "lucide-react";
 export const experiences: Experience[] = [
     {
         title: "Front-End Developer (Intern)",
-        company: "Okkam Group, Moscow",
+        company: "Okkam Group, Moscow(Remote)",
         date: "June 2023 – Nov 2023",
         description: [
             "Built and optimized dynamic React apps with reusable components",
@@ -16,7 +16,7 @@ export const experiences: Experience[] = [
     },
     {
         title: "Junior Front-End Developer",
-        company: "Indra, Barcelona",
+        company: "CROC, Moscow(Remote)",
         date: "Dec 2023 – Sept 2024",
         description: [
             "Led UI improvements and reduced page load by 18%",
