@@ -29,7 +29,7 @@ export const experiences: Experience[] = [
     {
         title: "Web Admin & WordPress Dev",
         company: "Store Alarcon, Barcelona",
-        date: "Oct 2024 – Apr 2025",
+        date: "Oct 2024 – Currently",
         description: [
             "Managed eCommerce store updates, built custom plugins",
             "Improved Core Web Vitals scores using optimization strategies",
