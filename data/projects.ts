@@ -7,7 +7,6 @@ export const projects: Project[] = [
         tags: ["NestJS", "PostgreSQL", "Prisma", "Next.js", "Docker"],
         image: "/images/nearnow.png",
         url: "https://nearnow.vercel.app/",
-        wip: true,
     },
     {
         title: "Finly - Financial Intelligence",
