@@ -51,6 +51,7 @@ export const projects: Project[] = [
         tags: ["React", "D3.js", "CoinGecko API", "Firebase"],
         image: "/images/project5.png",
         url: "https://cryptoia.netlify.app/",
+        wip: true,
     },
     {
         title: "Luz Animal",
